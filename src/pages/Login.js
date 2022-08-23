@@ -1,56 +1,78 @@
+import axios from "axios";
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ setUser }) => {
+  const url = "http://localhost:8000/api/v1/organizations/login";
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
+
+  const loginUser = async () => {
+    try {
+      const { data } = await axios.post(url, {
+        email: email,
+        password: password,
+      });
+      setUser(data);
+      navigate("/");
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!password || !email) return;
-    setUser({ name: password, email: email });
-    navigate("/");
+    loginUser();
   };
 
   return (
-    <section className="section">
-      <form className="form" onSubmit={handleSubmit}>
-        <h5>login</h5>
+    <>
+      {error && <div className="errorBar">{error}</div>}
 
-        <div className="form-row">
-          <label htmlFor="email" className="form-label">
-            email
-          </label>
-          <input
-            type="email"
-            className="form-input"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-        <div className="form-row">
-          <label htmlFor="password" className="form-label">
-            password
-          </label>
-          <input
-            type="password"
-            className="form-input"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <button type="submit" className="btn btn-block">
-          login
-        </button>
-        <Link to={`/register`} className="link">
-          register
-        </Link>
-      </form>
-    </section>
+      <section className="section">
+        <form className="form" onSubmit={handleSubmit}>
+          <h2>login</h2>
+
+          <div className="Input">
+            <input
+              type="email"
+              id="email"
+              className="Input-text"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <label htmlFor="input" className="Input-label">
+              Email
+            </label>
+          </div>
+
+          <div className="Input">
+            <input
+              type="password"
+              id="password"
+              className="Input-text"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <label htmlFor="input" className="Input-label">
+              Password
+            </label>
+          </div>
+
+          <button type="submit" className="btn">
+            login
+          </button>
+        </form>
+      </section>
+    </>
   );
 };
 export default Login;

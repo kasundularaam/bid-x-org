@@ -1,25 +1,33 @@
 import { NavLink } from "react-router-dom";
-const Navbar = () => {
+import logo from "../assets/logo.png";
+const Navbar = ({ setUser }) => {
   return (
     <nav className="navbar">
-      <NavLink
-        to="/"
-        className={({ isActive }) => (isActive ? "link active" : "link")}
-      >
-        Home
+      <NavLink to="/">
+        <img src={logo} alt="" />
       </NavLink>
-      <NavLink
-        to="stocks"
-        className={({ isActive }) => (isActive ? "link active" : "link")}
-      >
-        Stocks
-      </NavLink>
-      <NavLink
-        to="/login"
-        className={({ isActive }) => (isActive ? "link active" : "link")}
-      >
-        Sign out
-      </NavLink>
+      <div className="textLinks">
+        <NavLink
+          to="/"
+          className={({ isActive }) => (isActive ? "link active" : "link")}
+        >
+          Home
+        </NavLink>
+        <NavLink
+          to="/newNews"
+          className={({ isActive }) => (isActive ? "link active" : "link")}
+        >
+          New News
+        </NavLink>
+
+        <NavLink
+          to="/auth/login"
+          className={({ isActive }) => (isActive ? "link active" : "link")}
+          onClick={() => setUser(null)}
+        >
+          Sign out
+        </NavLink>
+      </div>
     </nav>
   );
 };

@@ -1,35 +1,50 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Home from "./pages/Home";
 import Error from "./pages/Error";
-import SharedLayout from "./pages/SharedLayout";
 import Login from "./pages/Login";
-import ProtectedRoute from "./pages/ProtectedRoute";
-import Register from "./pages/Register";
+import { AuthSharedLayout, NoAuthSharedLayout } from "./pages/SharedLayout";
+import { AuthRoute, NoAuthRoute } from "./pages/ProtectedRoute";
 import Stocks from "./pages/Stocks";
 import Stock from "./pages/Stock";
 import ReadNews from "./pages/ReadNews";
 import News from "./pages/News";
+import NewNews from "./pages/NewNews";
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(
+    JSON.parse(window.sessionStorage.getItem("user"))
+  );
+  useEffect(() => {
+    setUser(JSON.parse(window.sessionStorage.getItem("user")));
+  }, []);
+
+  useEffect(() => {
+    window.sessionStorage.setItem("user", JSON.stringify(user));
+  }, [user]);
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login setUser={setUser}></Login>} />
         <Route
-          path="/register"
-          element={<Register setUser={setUser}></Register>}
-        />
+          path="/auth"
+          element={
+            <NoAuthRoute user={user}>
+              <NoAuthSharedLayout />
+            </NoAuthRoute>
+          }
+        >
+          <Route path="login" element={<Login setUser={setUser} />} />
+        </Route>
 
         <Route
           path="/"
           element={
-            <ProtectedRoute user={user}>
-              <SharedLayout />
-            </ProtectedRoute>
+            <AuthRoute user={user}>
+              <AuthSharedLayout setUser={setUser} />
+            </AuthRoute>
           }
         >
           <Route index element={<Home user={user} />} />
+          <Route path="newNews" element={<NewNews />} />
           <Route path="stocks">
             <Route index element={<Stocks />} />
             <Route path=":stockId" element={<Stock />} />
